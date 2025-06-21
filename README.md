@@ -11,7 +11,7 @@ This repository contains my implementations and explorations related to the theo
 
 ---
 
-##Experiment #1: Sequentially Linearly Separable Data (SLS)
+## Experiment #1: Sequentially Linearly Separable Data (SLS)
 
 ### Objective
 To implement the CE24 construction on simple SLS data using MNIST digits and explore how well explicitly defined hyperplanes classify clusters.
@@ -27,7 +27,7 @@ To implement the CE24 construction on simple SLS data using MNIST digits and exp
 
 ---
 
-##Experiment #2: Trained ReLU Networks and Cone Visualization
+## Experiment #2: Trained ReLU Networks and Cone Visualization
 
 ### Objective
 To empirically investigate the emergence of cone structures after training a ReLU network, inspired by CE24 and Ewa25.

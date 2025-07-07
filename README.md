@@ -1,49 +1,24 @@
-# ReLU Networks and Cone Geometry
-
-This repository contains my implementations and explorations related to the theoretical work in [CE23], [CE24], and [Ewa25] on ReLU neural networks and cone geometry. The experiments focus on visualizing how class separation and cone structures can emerge through explicitly constructed networks and gradient-based training.
-
+# ReLU Networks and Cone Geometry: Summer 2025 Experiments
 ---
 
-## Papers Referenced
-- **CE23**: Geometric Structure of Deep Learning Networks and Construction of Global L2 Minimizers
-- **CE24**: Interpretable Global Minima of Deep ReLU Neural Networks on Sequentially Separable Data
-- **Ewa25**: Explicit Neural Network Classifiers for Non-Separable Data
+## Experiments (use the links below to view/run projects)
 
----
+### 1. Testing for Sequential Linear Separability  
+[ Mayank_Summer_2025_Experiment_1.ipynb](https://colab.research.google.com/drive/1glI17EJJEdi8scGCjhpa42ZmpCsZ4CVU?usp=sharing)
 
-## Experiment #1: Sequentially Linearly Separable Data (SLS)
+### 2. Visualizing the Cones  
+[ Mayank_Summer_2025_Experiment_2.ipynb](https://colab.research.google.com/drive/1owO-VAnCmoNxCXqZ91DN30ZMfRnAbYNi?usp=sharing)
 
-### Objective
-To implement the CE24 construction on simple SLS data using MNIST digits and explore how well explicitly defined hyperplanes classify clusters.
+## Papers - Scholarly References
 
-### Key Features
-- Used MNIST digits {0, 1, 2}.
-- Defined clusters with Gaussian noise to simulate SLS.
-- Visualized hyperplanes and explored both strict and relaxed SLS settings.
+- **`CE23`:** *Geometric Structure of Deep Learning Networks and Construction of Global L2 Minimizers*
+- **`CE24`:** *Interpretable Global Minima of Deep ReLU Neural Networks on Sequentially Separable Data*
+- **`Ewa25`:** *Explicit Neural Network Classifiers for Non-Separable Data*
+- **`ifml-talk`:** *Slideshow of Talk on Interpretability of ReLU Neural Networks via Truncation Maps*
 
-### Outcome
-- Visualized the hyperplane-based separation.
-- Understood and confirmed the SLS theory in CE24.
+## Important Files
 
----
-
-## Experiment #2: Trained ReLU Networks and Cone Visualization
-
-### Objective
-To empirically investigate the emergence of cone structures after training a ReLU network, inspired by CE24 and Ewa25.
-
-### Key Tasks
-- Trained a CE24-style network (L=Q+1 layers) on MNIST (digits 0, 1, 2).
-- Computed cumulative parameters (W_l, b_l).
-- Defined truncation maps and extracted cone geometry:
-  - Base point: `p = -W_pinv * b`
-  - Edge vectors: `v_i = W_pinv * e_i`
-- Projected data and cones via PCA and visualized the results.
-
-### Outcome
-- Understood how trained ReLU networks can implicitly construct cone-like transformations.
-- Developed PCA-based visual tools for interpreting these cones.
----
-
-##Acknowledgements
-Special thanks to Professor Chen and Patricia for their guidance and for introducing me to this exciting intersection of geometry and deep learning.
+- **`Experiments Initial Plan`** — *Suggested plan to work through both experiments: Testing for Sequential Linear Separability and Visualizing the Cones*
+- **`Intuitive Explanation of the Hyperplane Separation`** — *Notes by Professor Chen on the intuitive explanation of the hyperplane separation in the toy model for MNIST*
+- **Meeting #2 - July 2nd/`Meeting Update Slideshow`** - *Monthly update presentation (by Mayank) on my implementation of the initial plan for both experiments.*
+- **`Project_Help.md`** — *Guidance provided by Patrícia and Professor Chen on any questions I have regarding the task given*

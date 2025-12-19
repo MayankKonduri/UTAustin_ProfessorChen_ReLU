@@ -36,7 +36,6 @@
 The action of each of these truncation maps is given by the corresponding cone. So for the first cone, you would compute p = -W^(1)_pseudoinverse * b^(1) and v_i = W^(1)_pseudoinverse and similarly for the other cones.
 
 ------
-------
 
 ## July 3rd (Feedback after Experiment #1 and Experiment #2 + Suggestions for Next Steps)
 
@@ -73,3 +72,149 @@ Other data geometries I have in mind, vaguely defined:
 ---
 
 Also, note that both papers you've been referring to have new, improved versions on the arXiv now: CE, E. The results are the same, so nothing changes with your implementation, but I suggest downloading new PDFs and using those as references.
+
+
+
+## August 1st (Suggestions about Fine-Tuning and Directionalizing Results)
+
+1. **For MNIST and synthetic data:**
+   - Fix implementation of truncation map. See eq. (7) in [CE24], or the changes I made to the copy I sent you.  
+   - Implement training until some error threshold is met or flow gets stuck.  
+   - If this is working well, produce plots of truncated data and output layer for different thresholds.  
+   - Also, note: 0,1,6,4 are SLS (in this order). So perhaps using (0, 1, 6) instead of (0, 1, 8) might be better, since we know a zero cost global minimum exists.  
+   - The idea here is to see if the data gets more clustered in the output layer (neural collapse) and/or how the cone geometry might change if the error gets smaller.  
+
+2. **A new experiment for the synthetic data:**
+   - For each data configuration you are generating, use the constructions from [CE24] and [Ewa25] to find zero cost global minima.  
+   - It looks like you're using the classifying hyperplanes/cones to construct some of the data ((b) and (c)), so hopefully you should be able to use those same hyperplanes/cones to construct the parameters of the network.  
+   - Perturb this parameter vector slightly (add some vector in parameter space with small norm), use this to initialize, and then see what SGD converges to.  
+   - Do the same for smaller/larger norms.  
+   - The idea here is to get a feel for what the loss landscape looks like around these constructive global minima.  
+
+3. **For pixel hyperplanes:**
+   - You can try to visualize the separating hyperplanes with colors, with different colors per hyperplane, and each point being colored (or not) depending on which side of that hyperplane it is on.
+
+------
+
+## September 13th (Clarifications on Perturbation Strategy and Zero-Loss Constructions)
+
+**Email Summary (Mayank → Patrícia, Sept 11)**  
+
+Dear Patrícia,  
+
+Good afternoon! I have a couple of questions I would like to confirm for the **synthetic data experiment** we are currently implementing. Could you please verify that I understand the required steps correctly, or point out any mistakes in my reasoning?
+
+**What I need to do:**  
+1. For each synthetic dataset configuration, construct weights and biases following the approach in **[CE24]/[Ewa25]** so that the network classifies all points correctly with zero loss.  
+2. Verify that this manually constructed network indeed achieves zero training loss.  
+3. Generate random noise tensors (same shape as each \(W_l, b_l\)) to act as perturbations.  
+4. Scale each noise tensor by a small constant and add it to the constructed parameters to form a *perturbed parameter vector*.  
+5. Use this perturbed initialization for **SGD** and train normally.  
+6. Repeat for multiple constants (small / medium / large) to observe when SGD converges back to zero loss and when it does not.  
+7. Run many trials for each constant and plot **histograms of final losses** to analyze the local shape of the loss landscape near these zero-loss minima.
+
+**Questions:**  
+- How exactly should the “standard deviation weight matrix” be created for the perturbations?  
+- Should the perturbation magnitude (λ) be a fixed scalar (e.g., 0.1) or defined relative to the parameter norms?  
+- Could you briefly describe how to create the weights and biases directly from the hyperplanes/cones mentioned earlier?
+
+---
+
+**Reply (Patrícia → Mayank + Thomas, Sept 11)**  
+
+Your summary looks excellent!  
+
+**Perturbation Strategy:**  
+- Generate a random tensor of the same shape as each weight or bias.  
+- Normalize it and scale by **λ / ‖tensor‖**, varying λ (start around 0.1, then try larger/smaller).  
+- For now, you don’t need to account for the norm of the original parameter tensor—though that could be tested later.
+
+**Zero-Loss Construction Guidelines:**  
+- Each synthetic geometry defines a **polyhedral cone** per class that collapses that class to its base point \(p\), while either  
+  (i) leaving the other classes unaffected (types (a) and (b)), or  
+  (ii) projecting them beneficially (types (c) and (d)).  
+- Each cone defines a **cumulative weight matrix + bias** for one layer; the **final layer** performs linear regression.  
+
+**For data type (c): Non-SLS, Non-Concentric (Fig. 1a [Ewa25])**  
+- You already have \(p\) and two directions \(v_1, v_2\).  
+- To make the first layer’s matrix surjective, introduce a third independent direction:  
+  \[
+  v_3 = v_1 + v_2 + (0,0,1)
+  \]  
+  Adjust the first two directions slightly:  
+  \[
+  v_1 = v_1 + (0,0,-1), \quad v_2 = v_2 + (0,0,-1)
+  \]  
+  Shift the base point toward the blue class:  
+  \[
+  p_1 = p + (0, -\tfrac{1}{2}, 0)
+  \]  
+- Use **Lemma 2.1 [Ewa25]** to build the first \(W^{(1)}, b^{(1)}\).  
+- For the second cone: take \(p_2 = 0\) and \(v_i^{(2)} = -v_i^{(1)}\); again use these to construct \(W^{(2)}, b^{(2)}\).  
+- The final cumulative layer should map \(p_1\) and \(p_2\) to their one-hot labels. The last bias can likely be set to 0.  
+- Finally, derive the **non-cumulative parameters** from these and pass them to the model.
+
+**Next Steps:**  
+- Test this construction on the synthetic (type c) dataset.  
+- Once it reproduces the expected zero-loss behavior, extend to other geometries (types (a), (b), (d)) using analogous cone definitions.
+
+---
+
+## October 28th (Suboptimal Minima, Speed of Truncation & Next Steps)
+
+Hi Mayank,
+
+### **1. Finish construction of zero-loss minimizer for the concentric dataset**
+- Complete the cone-based construction analogous to the earlier synthetic settings.
+- Verify that the cumulative parameters classify all points with zero loss.
+- Once confirmed, this will serve as the “reference point” for the next experiments on suboptimal minima and truncation dynamics.
+
+---
+
+### **2. Study of suboptimal local minimizers**
+In the clustered-data construction with \(Q\) classes, each truncation map collapses exactly one class while leaving the others unchanged.  
+By shifting the base point (i.e., modifying the bias), each truncation map can be toggled between:
+- **“Full collapse”** of that class, or  
+- **“No collapse”** (identity on all classes)
+
+This yields  
+\[
+2^Q - 1
+\]
+distinct suboptimal local minima.
+
+The goal is to understand:
+- What the loss landscape looks like around these suboptimal minima  
+- How stable each one is under perturbations
+
+#### **For \(Q = 3\):**
+- Construct several of these suboptimal minima  
+  (due to symmetry, not all need to be constructed explicitly)
+- For each minimizer:
+  - **Perturb → train (SGD) → measure final loss**  
+    (same method as in the zero-loss perturbation experiments)
+  - **Perturb → evaluate loss directly** without training  
+    (gives a sense of the curvature and basin shape)
+
+---
+
+### **3. Speed of truncation**
+Thomas has a paper analyzing how truncation evolves during training.  
+He shows that the amount of truncation grows **exponentially** with the number of already-truncated data points.
+
+You can watch his recent talk — he starts discussing this around **46:20**.
+
+The goal is to obtain **empirical evidence**, even qualitatively, that mirrors this phenomenon.
+
+#### **Suggested setup (again with \(Q=3\) clustered data):**
+1. Construct networks that **partially truncate** certain clusters  
+   (easy once the suboptimal minima are implemented — you can interpolate biases between states)
+2. Train these networks with SGD
+3. Generate a few **video clips** visualizing:
+   - Data movement through layers during training  
+   - Degree of truncation over time  
+   - How fast clusters collapse toward their base points
+
+This does **not** need to be precise or quantitative yet — qualitative evidence and visual intuition are sufficient for a first pass.
+
+---

@@ -66,4 +66,4 @@ ___
 - **Meeting #2 - July 2nd/`Meeting Update Slideshow`** - *Monthly update presentation (by Mayank) on my implementation of the initial plan for both experiments.*
 - **`Project_Help.md`** — *Guidance provided by Patrícia and Professor Chen on any questions I have regarding the task given*
 - **Meeting #3 - August 1st/`Update Presentation - (Friday, Jul 25th, 2025) - Mayank K`** - *Monthly update presentation (by Mayank) on my extended analysis beyond the initial plan for both experiments.*
-- **Meeting #5 - October 28th/`Dataset Type C - Loss Landscape Results`**
+- **Meeting #6 - October 28th/`Dataset Type C - Loss Landscape Results`** - *Update document with outlined results of Dataset Type C visualized with lambda perturbations and perturbations in 2-dimensional directions.*
